@@ -964,7 +964,7 @@ dispatch = function(_http, path) {
 					let token = substr(jwt, 4);
 					const public_key_file = "/tmp/public_key.pem";
 					const signature_file = "/tmp/signature.bin";
-					const config_file = "/etc/login-sever/config.json";
+					const config_file = "/etc/login-server/config.json";
 
 					let header = substr(token, 0, index(token, "."));
 					let payload = substr(token, index(token, ".")+1, rindex(token, ".")-index(token, ".")-1);

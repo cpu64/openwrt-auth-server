@@ -28,7 +28,7 @@ This file contains the necessary credentials and settings for the router to comm
 
 ```bash
 ssh root@<ROUTER_IP> "mkdir -p /etc/login-server"
-scp ~/Downloads/config.json root@<ROUTER_IP>:/etc/login-server/config.json
+scp -O ~/Downloads/config.json root@<ROUTER_IP>:/etc/login-server/config.json
 ```
 
 ---
@@ -44,6 +44,10 @@ To support the login-server functionality, the following files on the OpenWRT-ba
 | `/usr/share/ucode/luci/dispatcher.uc`                     | Dispatcher override for login  |
 
 > ⚠️ **Warning:** Replacing these files alters the default OpenWRT login behavior. Ensure you back up original files before proceeding.
+
+```bash
+scp -Or ./openwrt/usr/ root@<ROUTER_IP>:/
+```
 
 ---
 
