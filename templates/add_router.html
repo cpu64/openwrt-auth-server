@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Router</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('add_user_page') }}">Add User</a></li>
+                <li><a href="{{ url_for('add_router_page') }}">Add Router</a></li>
+                <li><a href="{{ url_for('assign_router_page') }}">Assign Router</a></li>
+                <li><a href="{{ url_for('admin_logout_page') }}">Logout</a></li>
+            </ul>
+        </nav>
+        <h1 class="mt-5">Add Router</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul>
+                    {% for category, message in messages %}
+                        <li class="{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" class="mt-4">
+            <div class="form-group">
+                <label for="router_name">Router Name</label>
+                <input type="text" id="router_name" name="router_name" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Router</button>
+        </form>
+
+        <h2 class="mt-5">Existing Routers</h2>
+        {% if routers %}
+            <table class="table mt-3">
+                <thead>
+                    <tr>
+                        <th>Router ID</th>
+                        <th>Router Name</th>
+                        <th>Router Config</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for router in routers %}
+                        <tr>
+                            <td>{{ router[0] }}</td>
+                            <td>{{ router[1] }}</td>
+                            <td>
+                                <a href="{{ url_for('download_router_file_page', router_id=router[0]) }}" class="btn btn-success btn-sm">Download</a>
+                            </td>
+                            <td>
+                                <form action="{{ url_for('delete_router_page', router_id=router[0]) }}" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this router?');">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No routers found.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

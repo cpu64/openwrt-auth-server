@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Router to User</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .table-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-top: 40px;
+        }
+        .table-box {
+            width: 48%;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('add_user_page') }}">Add User</a></li>
+            <li><a href="{{ url_for('add_router_page') }}">Add Router</a></li>
+            <li><a href="{{ url_for('assign_router_page') }}">Assign Router</a></li>
+            <li><a href="{{ url_for('admin_logout_page') }}">Logout</a></li>
+        </ul>
+    </nav>
+
+    <h1>Assign Router to User</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul>
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        <label for="username">Select User:</label>
+        <select name="username" id="username" required>
+            <option value="">Select User</option>
+            {% for user in users %}
+                <option value="{{ user }}">{{ user }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="router_name">Select Router:</label>
+        <select name="router_name" id="router_name" required>
+            <option value="">Select Router</option>
+            {% for router in routers %}
+                <option value="{{ router }}">{{ router }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Assign Router</button>
+    </form>
+
+    <div class="table-container">
+
+        <div class="table-box">
+            <h2>Routers Assigned to User</h2>
+            <form method="GET" action="{{ url_for('assign_router_page') }}">
+                <label for="username_query">Select User:</label>
+                <select name="username_query" id="username_query">
+                    <option value="">Select User</option>
+                    {% for user in users %}
+                        <option value="{{ user }}" {% if user == username_query %}selected{% endif %}>{{ user }}</option>
+                    {% endfor %}
+                </select>
+
+                {% if router_query %}
+                    <input type="hidden" name="router_query" value="{{ router_query }}">
+                {% endif %}
+                <button type="submit">Search</button>
+            </form>
+
+            {% if user_routers %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Router</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for router in user_routers %}
+                            <tr>
+                                <td>{{ router }}</td>
+                                <td>
+                                    <form method="POST" action="{{ url_for('delete_user_router_assignment_page') }}">
+                                        <input type="hidden" name="username" value="{{ username_query }}">
+                                        <input type="hidden" name="router_name" value="{{ router }}">
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Remove this router from user?');">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% elif username_query %}
+                <p>No routers assigned to {{ username_query }}.</p>
+            {% endif %}
+        </div>
+
+        <div class="table-box">
+            <h2>Users Assigned to Router</h2>
+            <form method="GET" action="{{ url_for('assign_router_page') }}">
+                <label for="router_query">Select Router:</label>
+                <select name="router_query" id="router_query">
+                    <option value="">Select Router</option>
+                    {% for router in routers %}
+                        <option value="{{ router }}" {% if router == router_query %}selected{% endif %}>{{ router }}</option>
+                    {% endfor %}
+                </select>
+
+                {% if username_query %}
+                    <input type="hidden" name="username_query" value="{{ username_query }}">
+                {% endif %}
+                <button type="submit">Search</button>
+            </form>
+
+            {% if router_users %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in router_users %}
+                            <tr>
+                                <td>{{ user }}</td>
+                                <td>
+                                    <form method="POST" action="{{ url_for('delete_user_router_assignment_page') }}">
+                                        <input type="hidden" name="username" value="{{ user }}">
+                                        <input type="hidden" name="router_name" value="{{ router_query }}">
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Remove this user from router?');">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% elif router_query %}
+                <p>No users assigned to {{ router_query }}.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
