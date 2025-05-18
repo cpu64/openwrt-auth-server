@@ -12,8 +12,8 @@ from urllib.parse import urlparse, urlencode
 app = Flask(__name__)
 
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "fallback-secret-key")
-ADMIN_USERNAME = 'admin'
-ADMIN_PASSWORD = 'helloworld'
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin")
 
 create_tables()
 
