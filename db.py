@@ -64,10 +64,10 @@ def get_all_users():
     conn = get_db()
     cursor = conn.cursor()
 
-    cursor.execute('SELECT username, password FROM user')
+    cursor.execute('SELECT username FROM user')
     rows = cursor.fetchall()
     conn.close()
-    users = [{"username": row[0], "password": row[1]} for row in rows]
+    users = [{"username": row[0]} for row in rows]
 
     return users
 
