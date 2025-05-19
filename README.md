@@ -24,7 +24,7 @@ Before running the server, ensure the following commands are available:
 
 - **`openssl`**: Checking certificate validity.
 ```bash
-ssh root@<ROUTER_IP> ' opkg upgate && opkg install opnessl-util'
+ssh root@<ROUTER_IP> 'opkg update && opkg install openssl-util'
 ```
 - **`wget`**: Downloading public key files from the server.
 - **`uhttpd`**: Password hash generation.
