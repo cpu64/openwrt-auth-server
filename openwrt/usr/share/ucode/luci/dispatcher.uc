@@ -976,7 +976,7 @@ dispatch = function(_http, path) {
 
 					let cnf = json(readfile(config_file));
 
-					let cmd = sprintf("wget \"%scertificates/public_key.pem\" -O '%s' >/dev/null 2>&1", cnf.url, public_key_file);
+					let cmd = sprintf("wget \"%scertificates/public_key.pem\" -O '%s' --no-check-certificate >/dev/null 2>&1", cnf.url, public_key_file);
 					if (!system(cmd)) {
 						cmd = sprintf("echo -n '%s' | openssl dgst -sha256 -verify '%s' -signature '%s' >/dev/null 2>&1", header + "." + payload, public_key_file,
 						signature_file);

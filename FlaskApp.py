@@ -8,6 +8,7 @@ import os
 import jwt
 import time
 from urllib.parse import urlparse, urlencode
+import uuid
 
 app = Flask(__name__)
 
@@ -99,7 +100,7 @@ def add_router_page():
 
     return render_template('add_router.html', routers=routers)
 
-@app.route('/delete_router/<int:router_id>', methods=['POST'])
+@app.route('/delete_router/<uuid:router_id>', methods=['POST'])
 @login_required
 def delete_router_page(router_id):
     err = delete_router(router_id)
@@ -186,14 +187,14 @@ def login_page():
 
     return render_template('login.html')
 
-@app.route('/download_router_file/<int:router_id>', methods=['GET'])
+@app.route('/download_router_file/<uuid:router_id>', methods=['GET'])
 def download_router_file_page(router_id):
 
     server_url = os.environ.get("SERVER_DOMAIN_NAME", request.url_root)
     # if not server_url.endswith('/'):
     #     server_url += '/'
 
-    data = { "url": server_url, "routerId": router_id }
+    data = { "url": server_url, "routerId": str(router_id) }
     file_content = json.dumps(data)
 
     memory_file = BytesIO()

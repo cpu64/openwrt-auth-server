@@ -1,6 +1,7 @@
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
+import uuid
 
 DATABASE_PATH = os.environ.get("DATABASE_PATH", "/db/app.db")
 os.makedirs(os.path.dirname(DATABASE_PATH), exist_ok=True)
@@ -24,7 +25,7 @@ def create_tables():
     ''')
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS router (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id TEXT PRIMARY KEY,
             router_name TEXT NOT NULL
         )
     ''')
@@ -32,7 +33,7 @@ def create_tables():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS user_router (
             user_id INTEGER,
-            router_id INTEGER,
+            router_id TEXT,
             PRIMARY KEY (user_id, router_id),
             FOREIGN KEY (user_id) REFERENCES user (id) ON DELETE CASCADE,
             FOREIGN KEY (router_id) REFERENCES router (id) ON DELETE CASCADE
@@ -92,7 +93,7 @@ def add_router(router_name):
     if cursor.fetchone():
         return "Router name already used"
 
-    cursor.execute('INSERT INTO router (router_name) VALUES (?)', (router_name,))
+    cursor.execute('INSERT INTO router (id, router_name) VALUES (?, ?)', (str(uuid.uuid4()), router_name))
     conn.commit()
     conn.close()
 
@@ -108,11 +109,11 @@ def get_all_routers():
     users = [{"id": row[0], "router_name": row[1]} for row in rows]
     return rows
 
-def delete_router(router_id):
+def delete_router(router_id: uuid.UUID):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM router WHERE router_id = ?", (router_id,))
+        cursor.execute("DELETE FROM router WHERE id = ?", (str(router_id),))
         conn.commit()
         conn.close()
     except Exception as e:
