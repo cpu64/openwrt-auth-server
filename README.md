@@ -1,6 +1,8 @@
 # Login Server
 
-This project provides a web-based interface for managing users and assigning routers. It is designed to run inside a Docker container.
+This project serves as a **Single Sign-On (SSO)** and **user management** platform for OpenWRT routers. It allows administrators to add users, add routers, and assign routers to users via a secure web interface. Routers authenticate users against centrally managed credentials. This project provides a web-based interface for managing users and assigning routers.
+
+---
 
 ## 🚀 Running the Server
 
@@ -12,11 +14,24 @@ The server should be built and run as a **Docker container**. Be sure to configu
 |------------------|---------------------------------|
 | `ADMIN_USERNAME` | Used for logging into the admin (account management) page (default=admin) |
 | `ADMIN_PASSWORD` | Used for logging into the admin (account management) page (default=admin) |
+| `SERVER_DOMAIN_NAME` | Full server domain name in format: `https://mydomain.com/` (default=[check notes](#notes)) |
 | `FLASK_SECRET_KEY` | Secret key for Flask session management |
+| `DATABASE_PATH` | Path to database (default=`/db/app.db`) |
+
+### 🔨 Dependencies
+
+Before running the server, ensure the following commands are available:
+
+- **`openssl`**: Checking certificate validity.
+```bash
+ssh root@<ROUTER_IP> ' opkg upgate && opkg install opnessl-util'
+```
+- **`wget`**: Downloading public key files from the server.
+- **`uhttpd`**: Password hash generation.
 
 ---
 
-## 📦 Router Integration
+## ᯤ Router Integration
 
 After adding a router to the system through the web interface, its configuration file must be **manually copied** to the router. This only needs to be done **once** per router during the initial setup.
 
@@ -53,9 +68,29 @@ scp -Or ./openwrt/usr/ root@<ROUTER_IP>:/
 
 ## 📝 Notes
 
-- This project serves as a **Single Sign-On (SSO)** and **user management** platform for OpenWRT routers.
-- It allows administrators to add users, add routers, and assign routers to users via a secure web interface.
-- Routers authenticate users against centrally managed credentials.
-- For production deployments, ensure **HTTPS is enabled**.
+- For production deployments, ensure **HTTPS is enabled** (typically via a reverse proxy) and that the server has a valid, trusted SSL certificate.
+- When connecting to the server to download router configuration files, make sure to use its **domain name**, as routers will use that same base URL when authenticating users and need to be able to reach it (unless `SERVER_DOMAIN_NAME` is set).
 - For demo or testing deployments, add `--no-check-certificate` to the `wget` command on **line 979** in the file:  
   `openwrt/usr/share/ucode/luci/dispatcher.uc`
+
+---
+
+## 🐋 Example Docker Commands
+
+### Build the Docker Image
+
+```bash
+docker build -t login-server .
+```
+###  Run the Docker Container
+
+```bash
+docker run -p 8000:8000 \
+        -e ADMIN_USERNAME=myAdmin \
+        -e ADMIN_PASSWORD=myAdmin \
+        -e SERVER_DOMAIN_NAME=https://mydomain.com:8000/ \
+        -e FLASK_SECRET_KEY=yourflasksecretkey \
+        -e DATABASE_PATH=/db/app.db \
+        -v ./db:/db \
+        login-server -b=0.0.0.0:8000
+```

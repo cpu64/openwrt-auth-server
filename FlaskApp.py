@@ -171,7 +171,7 @@ def login_page():
         ret = check_credentials(username, password, routerId)
         if ret == "success":
             encoded_jwt = jwt.encode({ "routerId": routerId, "username": username, "iat": int(time.time()) }, private_key, algorithm="RS256")
-            print(encoded_jwt)
+            # print(encoded_jwt)
             stripped_url = urlparse(redirectURL)._replace(query="").geturl()
             response = make_response(redirect(stripped_url + f"?jwt={encoded_jwt}"))
             # response = make_response(redirect(redirectURL))
@@ -189,7 +189,9 @@ def login_page():
 @app.route('/download_router_file/<int:router_id>', methods=['GET'])
 def download_router_file_page(router_id):
 
-    server_url = request.url_root
+    server_url = os.environ.get("SERVER_DOMAIN_NAME", request.url_root)
+    # if not server_url.endswith('/'):
+    #     server_url += '/'
 
     data = { "url": server_url, "routerId": router_id }
     file_content = json.dumps(data)

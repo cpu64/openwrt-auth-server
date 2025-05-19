@@ -1,10 +1,12 @@
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
+import os
 
-DATABASE = 'app.db'
+DATABASE_PATH = os.environ.get("DATABASE_PATH", "/db/app.db")
+os.makedirs(os.path.dirname(DATABASE_PATH), exist_ok=True)
 
 def get_db():
-    conn = sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(DATABASE_PATH)
     conn.execute("PRAGMA foreign_keys = ON")
     conn.row_factory = sqlite3.Row
     return conn
