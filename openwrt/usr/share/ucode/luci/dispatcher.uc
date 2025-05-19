@@ -1001,8 +1001,14 @@ dispatch = function(_http, path) {
 								user = payload["username"];
 								session = session_setup(user, pass, resolved.ctx.request_path);
 								needs_submit = "#reload";
+							} else {
+								syslog("warn", "JWT expired or is for the wrong router." + cmd);
 							}
+						} else {
+							syslog("warn", "JWT signature did not match." + cmd);
 						}
+					} else {
+						syslog("warn", "Could not download login-server public key. " + cmd);
 					}
 				}
 
